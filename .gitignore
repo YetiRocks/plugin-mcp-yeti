@@ -1,0 +1,17 @@
+# Build artifacts — the Yeti compiler scaffolder produces dylibs and
+# intermediate Cargo state under {rootDirectory}/cache/builds/, not
+# here, but defensively ignore in case anyone runs `cargo build` in
+# this directory standalone.
+target/
+**/*.rs.bk
+**/*.dylib
+**/*.so
+**/*.dll
+Cargo.lock
+
+# Editor / OS noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
