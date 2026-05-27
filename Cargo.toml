@@ -1,30 +1,23 @@
 [package]
 name = "plugin-mcp-yeti"
 edition = "2024"
-description = "Reference MCP plugin: extends yeti-mcp's tool registry across the cdylib boundary via the YTC-367 hook bridge"
+description = "Reference MCP tool-source plugin: implements McpToolSource → host exports yeti:mcp/mcp-tool-source"
 version = "0.1.0"
 
 [package.metadata.app]
 customer_id = "yeti"
 plugin = true
-# Required so the app loader picks up and compiles `resources/plugin.rs`
-# into a dylib. The compiler scans the copied module sources for
-# `impl Plugin for ...` and auto-emits `__yeti_export_plugin!(YetiMcpPlugin)`.
+# Required so the app loader picks up and compiles `resources/source.rs`
+# into a wasm component. The compiler scans the copied module sources for
+# `impl McpToolSource for ...`; the presence of that impl switches the
+# generated wit_bindgen world from `customer-app` to `tool-source-export`
+# and auto-emits the `Guest` impl for `yeti:mcp/mcp-tool-source` that
+# delegates verb-for-verb into the customer struct.
 resources = { path = "resources/*.rs" }
 
 [dependencies]
 # `yeti-sdk` is path-injected by the scaffolder at compile time. The
 # `workspace = true` form is filtered out by the compiler and replaced
-# with `{ path = "..." }`. yeti-sdk re-exports `yeti_types::extension`
-# via `yeti_sdk::prelude::extension`, so this dylib reaches the
-# canonical `ListToolsRequest` / `CallToolRequest` types and the hook
-# chain name constants without a direct `yeti-types` dep.
+# with `{ path = "..." }`. yeti-sdk re-exports the `McpToolSource` trait
+# + companion record types under `yeti_sdk::mcp`.
 yeti-sdk = { workspace = true }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-# `log` crate routes through yeti_sdk's host-bridged log::Log impl —
-# `log::info!` / `log::warn!` show up in the host's tracing subscriber
-# (bare `tracing::info!` from a dylib does NOT, see AGENTS.md). Used
-# for the verification log line "Registered list_tools + call_tool
-# hooks ..." that end-to-end checks grep for.
-log = "0.4"
