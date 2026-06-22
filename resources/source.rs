@@ -1,8 +1,8 @@
 //! Reference MCP tool source for Yeti.
 //!
-//! Implements [`yeti_sdk::mcp::McpToolSource`] on a unit struct. The
+//! Implements [`yeti_sdk::mcp::McpProvider`] on a unit struct. The
 //! yeti-compiler (`detect_provider_kind` →
-//! `discover_mcp_tool_source_in_file`) sees `impl McpToolSource for X`,
+//! `discover_mcp_tool_source_in_file`) sees `impl McpProvider for X`,
 //! switches the component's `wit_bindgen!` world from `customer-app`
 //! to `tool-source-export`, and auto-emits a `Guest` impl for
 //! `yeti:mcp/mcp-tool-source` that delegates verb-for-verb into this
@@ -16,7 +16,7 @@
 //! `list_tools` and `call_tool` match arms together to add more.
 
 use yeti_sdk::mcp::{
-    McpDescriptor, McpToolSource, PromptInfo, PromptResult, ResourceContent, ResourceInfo,
+    McpDescriptor, McpProvider, PromptInfo, PromptResult, ResourceContent, ResourceInfo,
     ToolInfo, ToolResult,
 };
 
@@ -33,7 +33,7 @@ const HELLO_TOOL: &str = "yeti_hello";
 const HELLO_INPUT_SCHEMA: &[u8] = br#"{"type":"object","properties":{},"additionalProperties":false}"#;
 
 /// Default-constructible source. The compiler detects
-/// `impl McpToolSource for YetiMcp` and scaffolds the WIT export
+/// `impl McpProvider for YetiMcp` and scaffolds the WIT export
 /// wiring; no `__yeti_export_*` macro invocation required.
 ///
 /// Note: the struct name (`YetiMcp`) intentionally does **not** match
@@ -46,7 +46,7 @@ const HELLO_INPUT_SCHEMA: &[u8] = br#"{"type":"object","properties":{},"addition
 #[derive(Default)]
 pub struct YetiMcp;
 
-impl McpToolSource for YetiMcp {
+impl McpProvider for YetiMcp {
     fn list_tools(&self) -> Result<Vec<ToolInfo>, String> {
         Ok(vec![ToolInfo {
             name: HELLO_TOOL.to_owned(),
