@@ -16,8 +16,8 @@
 //! `list_tools` and `call_tool` match arms together to add more.
 
 use yeti_sdk::mcp::{
-    McpDescriptor, McpProvider, PromptInfo, PromptResult, ResourceContent, ResourceInfo,
-    ToolInfo, ToolResult,
+    McpDescriptor, McpProvider, PromptInfo, PromptResult, ResourceContent, ResourceInfo, ToolInfo,
+    ToolResult,
 };
 
 /// Source name registered with the host. Becomes the routing key for
@@ -30,7 +30,8 @@ const SOURCE_NAME: &str = "yeti-builtin";
 const HELLO_TOOL: &str = "yeti_hello";
 
 /// JSON Schema for `yeti_hello`: takes no arguments.
-const HELLO_INPUT_SCHEMA: &[u8] = br#"{"type":"object","properties":{},"additionalProperties":false}"#;
+const HELLO_INPUT_SCHEMA: &[u8] =
+    br#"{"type":"object","properties":{},"additionalProperties":false}"#;
 
 /// Default-constructible source. The compiler detects
 /// `impl McpProvider for YetiMcp` and scaffolds the WIT export
@@ -50,8 +51,7 @@ impl McpProvider for YetiMcp {
     fn list_tools(&self) -> Result<Vec<ToolInfo>, String> {
         Ok(vec![ToolInfo {
             name: HELLO_TOOL.to_owned(),
-            description: "Returns a greeting from the plugin-mcp-yeti reference source."
-                .to_owned(),
+            description: "Returns a greeting from the plugin-mcp-yeti reference source.".to_owned(),
             input_schema: HELLO_INPUT_SCHEMA.to_vec(),
             // Source field is filled in by the host from `describe()`;
             // leave empty here.
@@ -73,7 +73,7 @@ impl McpProvider for YetiMcp {
                     content: payload.into_bytes(),
                     is_error: false,
                 })
-            },
+            }
             other => Err(format!("tool `{other}` not found in `{SOURCE_NAME}`")),
         }
     }
